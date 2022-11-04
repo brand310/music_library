@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { React, useState } from "react";
 
 export function SearchBar({ handleSubmit }) {
   let [term, setTerm] = useState("");

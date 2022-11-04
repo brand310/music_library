@@ -1,24 +1,54 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import { SearchBar } from "./components/SearchBar";
+import { Gallery } from "./components/Gallery";
+import { React, useEffect, useState } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { ArtistView } from "./components/ArtistView";
+import { AlbumView } from "./components/AlbumView";
 
 function App() {
+  let [query, setQuery] = useState("");
+  let [data, setData] = useState([]);
+  // eslint-disable-next-line
+  let [message, setMesssage] = useState("Search for Music!");
+
+  useEffect(() => {
+    const fetchData = () => {
+      document.title = `${query} Music`;
+      fetch(`https://itunes.apple.com/search?term=${query}`)
+        .then((response) => response.json())
+        .then((result) => {
+          setData(result.results);
+        });
+    };
+
+    fetchData();
+  }, [query]);
+
+  const handleSubmit = (e, term) => {
+    e.preventDefault();
+    setQuery(term);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      {message}
+      <BrowserRouter>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                <SearchBar handleSubmit={handleSubmit} />
+                <Gallery data={data} />
+              </>
+            }
+          />
+          <Route path="/album/:id" element={<AlbumView />} />
+          <Route path="/artist/:id" element={<ArtistView />} />
+        </Routes>
+      </BrowserRouter>
+    </>
   );
 }
 
